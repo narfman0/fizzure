@@ -15,18 +15,25 @@ class Run:
         return self.time_for_calculation("pb")
 
     def time_for_calculation(self, calculation="pb"):
-        dt = None
+        dt = 0.0
         for segment in self.segments:
             segment_time = getattr(segment, f"time_{calculation}")
             if segment_time:
-                if dt is None:
-                    dt = 0
                 dt += segment_time
         return dt
 
+    def time_complete_for_calculation(self, calculation="pb"):
+        for segment in self.segments:
+            segment_time = getattr(segment, f"time_{calculation}")
+            if not segment_time:
+                return False
+        return True
+
     def stop(self):
         pb_time = self.time_pb()
-        is_pb = pb_time is None or pb_time > self.time_current()
+        is_pb = self.time_complete_for_calculation("current") and (
+            pb_time is None or pb_time > self.time_current()
+        )
         for segment in self.segments:
             if not segment.time_current:
                 break
