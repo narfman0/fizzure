@@ -1,4 +1,5 @@
 import curses
+import math
 import sys
 import time
 
@@ -7,7 +8,7 @@ from fizzure.controller import Controller
 from fizzure.models import Run, Segment
 
 COLUMN_WIDTH = 32
-COLUMN_WIDTH_SM = COLUMN_WIDTH // 3
+COLUMN_WIDTH_SM = 14
 
 
 def main(stdscr, activator=lambda: True):
@@ -63,7 +64,9 @@ def draw(stdscr, controller):
                 declare(stdscr, "<", y=y, x=4 * COLUMN_WIDTH_SM)
             y += 1
     if controller.active:
-        declare(stdscr, f"Time: {pretty_time(controller.elapsed_time)}", y=y)
+        declare(stdscr, "Time:", y=y)
+        message = pretty_time(controller.elapsed_time)
+        declare(stdscr, message, y=y, x=3 * COLUMN_WIDTH_SM)
     else:
         declare(stdscr, "Not started!", y=y, column_width=0)
 
@@ -126,7 +129,9 @@ def init_new_run(stdscr):
 def pretty_time(seconds):
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
-    return "%d:%02d:%02d" % (h, m, s)
+    frac, whole = math.modf(seconds)
+    ms = frac * 1000
+    return "%d:%02d:%02d.%02d" % (h, m, s, ms)
 
 
 def declare(stdscr, message, y=0, x=0, column_width=COLUMN_WIDTH):
