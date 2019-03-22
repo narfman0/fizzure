@@ -31,4 +31,4 @@ release: clean ## package and upload a release
 r: run-app
 run: init r
 t: run-test
-test: init-d t
+test: init-dev t
