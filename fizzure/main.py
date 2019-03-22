@@ -51,19 +51,19 @@ def draw(stdscr, controller):
         for index, segment in enumerate(controller.run.segments):
             declare(stdscr, segment.name, y=y)
             if segment.time_best:
-                message = f"{segment.time_best:.3f}"
+                message = pretty_time(segment.time_best)
                 declare(stdscr, message, y=y, x=COLUMN_WIDTH_SM)
             if segment.time_pb:
-                message = f"{segment.time_pb:.3f}"
+                message = pretty_time(segment.time_pb)
                 declare(stdscr, message, y=y, x=2 * COLUMN_WIDTH_SM)
             if segment.time_current:
-                message = f"{segment.time_current:.3f}"
+                message = pretty_time(segment.time_current)
                 declare(stdscr, message, y=y, x=3 * COLUMN_WIDTH_SM)
             if index == controller.current_segment_index:
                 declare(stdscr, "<", y=y, x=4 * COLUMN_WIDTH_SM)
             y += 1
     if controller.active:
-        declare(stdscr, f"Time: {controller.elapsed_time:.3f}", y=y)
+        declare(stdscr, f"Time: {pretty_time(controller.elapsed_time)}", y=y)
     else:
         declare(stdscr, "Not started!", y=y, column_width=0)
 
@@ -121,6 +121,12 @@ def init_new_run(stdscr):
             if segment:
                 segments.append(Segment(name=segment))
     return Run(segments=segments, game=game, category=category)
+
+
+def pretty_time(seconds):
+    m, s = divmod(seconds, 60)
+    h, m = divmod(m, 60)
+    return "%d:%02d:%02d" % (h, m, s)
 
 
 def declare(stdscr, message, y=0, x=0, column_width=COLUMN_WIDTH):
