@@ -1,4 +1,5 @@
 import curses
+import sys
 import time
 
 from fizzure import saves
@@ -40,7 +41,7 @@ def draw(stdscr, controller):
         if controller.run.category:
             declare(stdscr, "Category:", y=y)
             declare(stdscr, controller.run.category, y=y, x=COLUMN_WIDTH_SM)
-            y += 2
+            y += 1
         if controller.run.segments:
             declare(stdscr, "Name", y=y)
             declare(stdscr, "Best", y=y, x=COLUMN_WIDTH_SM)
@@ -49,6 +50,12 @@ def draw(stdscr, controller):
             y += 1
         for index, segment in enumerate(controller.run.segments):
             declare(stdscr, segment.name, y=y)
+            if segment.time_best:
+                message = f"{segment.time_best:.3f}"
+                declare(stdscr, message, y=y, x=COLUMN_WIDTH_SM)
+            if segment.time_pb:
+                message = f"{segment.time_pb:.3f}"
+                declare(stdscr, message, y=y, x=2 * COLUMN_WIDTH_SM)
             if segment.time_current:
                 message = f"{segment.time_current:.3f}"
                 declare(stdscr, message, y=y, x=3 * COLUMN_WIDTH_SM)
@@ -72,6 +79,13 @@ def handle_input(stdscr, controller, key):
         controller.pause()
     elif key == "n":
         controller.next()
+        if not controller.active:
+            stdscr.clear()
+    elif key == "c":
+        controller.clear()
+    elif key == "q":
+        saves.save(controller.run)
+        sys.exit(0)
 
 
 def init(stdscr):
@@ -104,7 +118,8 @@ def init_new_run(stdscr):
         while segment:
             segment = ask_question(stdscr, "Segment name:", y=y)
             y += 1
-            segments.append(Segment(name=segment))
+            if segment:
+                segments.append(Segment(name=segment))
     return Run(segments=segments, game=game, category=category)
 
 

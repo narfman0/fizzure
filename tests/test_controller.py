@@ -12,14 +12,15 @@ class TestController(unittest.TestCase):
         self.controller = Controller(self.run)
 
     def test_next(self):
-        self.assertEqual(0, self.controller.current_segment_index)
+        self.assertEqual(None, self.controller.current_segment_index)
         self.controller.next()
-        self.assertEqual(0, self.controller.current_segment_index)
+        self.assertEqual(None, self.controller.current_segment_index)
         self.controller.start()
         self.assertEqual(0, self.controller.current_segment_index)
         self.controller.next()
         self.assertEqual(1, self.controller.current_segment_index)
         self.controller.next()
+        self.assertEqual(None, self.controller.current_segment_index)
 
     def test_previous_segment(self):
         self.assertIsNone(self.controller.previous_segment())
@@ -43,3 +44,14 @@ class TestController(unittest.TestCase):
         time.time.return_value = 103.0
         self.controller.update()
         self.assertEqual(2.0, self.controller.current_segment_duration())
+
+    @patch("fizzure.timer.time")
+    def test_stop(self, time):
+        time.time.return_value = 100.0
+        self.controller.start()
+        time.time.return_value = 101.0
+        self.controller.update()
+        self.controller.next()
+        time.time.return_value = 103.0
+        self.controller.update()
+        self.controller.next()
