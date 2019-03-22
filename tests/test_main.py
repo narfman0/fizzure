@@ -5,8 +5,9 @@ from fizzure import main
 
 
 class TestMain(unittest.TestCase):
+    @patch("fizzure.main.init")
     @patch("fizzure.main.update")
-    def test_main(self, update):
+    def test_main(self, update, init):
         def activator():
             self.hits += 1
             return self.hits < 2
