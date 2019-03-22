@@ -1,26 +1,26 @@
 import os
 import pickle
 
-
-def does_default_exist():
-    return os.path.exists(default_path())
+DEFAULT_NAME = "default.sav"
 
 
-def load_default():
-    with open(default_path(), "rb") as input_file:
-        return pickle.load(input_file)
+def exists(name=DEFAULT_NAME):
+    return os.path.exists(path(name))
 
 
-def save_default(run):
-    with open(default_path(), "wb") as output_file:
+def load(name=DEFAULT_NAME):
+    with open(path(name), "rb") as input_file:
+        run = pickle.load(input_file)
+        run.upgrade()
+        return run
+
+
+def save(run, name=DEFAULT_NAME):
+    with open(path(name), "wb") as output_file:
         pickle.dump(run, output_file)
 
 
-def save_path():
-    path = os.path.join(os.path.expanduser("~"), ".fizzure")
-    os.makedirs(path, exist_ok=True)
-    return path
-
-
-def default_path():
-    return os.path.join(save_path(), "default.sav")
+def path(name=DEFAULT_NAME):
+    directory = os.path.join(os.path.expanduser("~"), ".fizzure")
+    os.makedirs(directory, exist_ok=True)
+    return os.path.join(directory, name)
