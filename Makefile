@@ -24,9 +24,13 @@ run-app:
 run-test:
 	pipenv run pytest --flake8 --black --cov=fizzure --cov-report term-missing tests/
 
-release: clean ## package and upload a release
+release-test: clean
 	pipenv run python setup.py sdist bdist_wheel
-	pipenv run twine upload
+	pipenv run twine upload --repository pypitest dist/*
+
+release-prod: clean
+	pipenv run python setup.py sdist bdist_wheel
+	pipenv run twine upload --repository pypi dist/*
 
 r: run-app
 run: init r

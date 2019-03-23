@@ -16,19 +16,14 @@ Install via pip::
 
     pip install fizzure
 
+You should now be able to run `fizzure` from your cli. Hurrah!
+
 Development
 -----------
 
 Run test suite to ensure everything works::
 
     make test
-
-Release
--------
-
-To publish your plugin to pypi, sdist and wheels are registered, created and uploaded with::
-
-    make release
 
 License
 -------
