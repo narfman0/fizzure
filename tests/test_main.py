@@ -16,6 +16,18 @@ class TestMain(unittest.TestCase):
         self.hits = 0
         main.main(stdscr, activator)
 
+    @patch("fizzure.main.ask_question_bool")
+    @patch("fizzure.main.curses")
+    @patch("fizzure.main.init_new_run")
+    @patch("fizzure.main.saves")
+    def test_init(self, saves, init_new_run, curses, ask_question_bool):
+        run = MagicMock(game="game1")
+        ask_question_bool.side_effect = [False, True]
+        init_new_run.return_value = run
+        stdscr = MagicMock()
+        result_run = main.init(stdscr)
+        self.assertEqual(run.game, result_run.game)
+
     @patch("fizzure.main.handle_input")
     def test_update(self, handle_input):
         def no_input():
