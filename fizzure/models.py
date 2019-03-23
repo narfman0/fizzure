@@ -14,7 +14,7 @@ class Run:
     def time_pb(self):
         return self.time_for_calculation("pb")
 
-    def time_for_calculation(self, calculation="pb"):
+    def time_for_calculation(self, calculation):
         dt = 0.0
         for segment in self.segments:
             segment_time = getattr(segment, f"time_{calculation}")
@@ -22,20 +22,29 @@ class Run:
                 dt += segment_time
         return dt
 
-    def time_complete_for_calculation(self, calculation="pb"):
+    def time_pb_complete(self):
+        return self.time_complete_for_calculation("pb")
+
+    def time_current_complete(self):
+        return self.time_complete_for_calculation("current")
+
+    def time_best_complete(self):
+        return self.time_complete_for_calculation("best")
+
+    def time_complete_for_calculation(self, calculation):
         for segment in self.segments:
             segment_time = getattr(segment, f"time_{calculation}")
-            if not segment_time:
+            if segment_time is None:
                 return False
         return True
 
     def stop(self):
         pb_time = self.time_pb()
-        is_pb = self.time_complete_for_calculation("current") and (
-            pb_time is None or pb_time > self.time_current()
+        is_pb = self.time_current_complete() and (
+            not self.time_pb_complete() or pb_time > self.time_current()
         )
         for segment in self.segments:
-            if not segment.time_current:
+            if segment.time_current is None:
                 break
             if segment.time_best is None:
                 segment.time_best = segment.time_current
